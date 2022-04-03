@@ -1,5 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 import type { NextPage } from "next";
+import Head from "next/head";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FiChevronsRight } from "react-icons/fi";
@@ -7,7 +8,7 @@ import Modal from "../lib/components/Modal";
 
 const Home: NextPage = () => {
   const [animeList, setAnimeList] = useState<{
-    animes: any[];
+    animes: Anime[];
     fetched: "yes" | "no" | "fetching";
   }>({
     animes: [],
@@ -21,19 +22,15 @@ const Home: NextPage = () => {
     }));
     fetch("https://ghibliapi.herokuapp.com/films")
       .then((res) => res.json())
-      .then((data) =>
+      .then((data: APIAnimeType[]) =>
         setAnimeList((x) => ({
           ...x,
           animes: data.map((d: any) => ({
             description: d.description,
             id: d.id,
             imgUrl: d.image,
-            banner: d.movie_banner,
             release: d.release_date,
-            director: d.director,
             title: d.title,
-            romanizedTitle: d.original_title_romanised,
-            originalTitle: d.original_title,
           })),
         }))
       );
@@ -47,19 +44,26 @@ const Home: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+        />
+        <title>LoopIn HQ</title>
+      </Head>
       <AnimatePresence>
         {selectedAnime > -1 && (
           <Modal
-            anime={animeList.animes[selectedAnime]}
+            animeId={animeList.animes[selectedAnime].id}
             closeModal={() => setSelectedAnime(-1)}
           />
         )}
       </AnimatePresence>
-      <div className="max-w-screen min-h-screen bg-blakc flex gap-6 flex-wrap justify-center relative">
+      <div className="max-w-screen min-h-screen bg-blakc flex gap-6 flex-wrap justify-center relative py-12">
         {animeList.animes.map((anime: Anime, index: number) => (
           <div
             key={anime.id}
-            className="bg-white flex flex-col justify-between rounded-lg hover:scale-110 drop-shadow-md overflow-hidden w-48 transition-all"
+            className="bg-white flex flex-col justify-between rounded-lg md:hover:scale-110 hover:scale-100 drop-shadow-md overflow-hidden w-60 max-w-[15rem] transition-all"
           >
             <div className="w-full h-72 relative">
               {
